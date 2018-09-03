@@ -1,7 +1,9 @@
 scriptencoding utf-8
 
 " require 7.4.1658 for v:vim_did_enter
-if exists('g:loaded_match_count_statusline') || (v:version <= 704 && !has('patch1658'))
+if &compatible
+      \ || (v:version <= 704 && !has('patch1658'))
+      \ || exists('g:loaded_match_count_statusline')
   finish
 endif
 let g:loaded_match_count_statusline = v:true
