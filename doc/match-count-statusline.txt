@@ -1,0 +1,248 @@
+*match-count-statusline*   Easily see the count of matches for your search
+
+     The match-count-statusline adds a statusline item for counting
+     up the number of occurrences for the current search pattern in
+                              your buffer
+
+Author:  Emily St <https://emily.st>
+Repo:    https://github.com/emilyst/match-count-statusline
+License: CC0 (Public Domain)
+
+
+==============================================================================
+CONTENTS                                     *match-count-statusline-contents*
+
+  1. Usage ......................................... |match-count-statusline-usage|
+  2. Commands ...................................... |match-count-statusline-commands|
+  3. Configuration ................................. |match-count-statusline-config|
+    3.1. Automatic configuration ................... |match-count-statusline-auto-config|
+    3.2. Statusline configuration .................. |match-count-statusline-status-config|
+    3.3. Other configuration ....................... |match-count-statusline-other-config|
+      3.3.1. match_count_disable_airline ........... |g:match_count_disable_airline|
+      3.3.2. match_count_disable_statusline ........ |g:match_count_disable_statusline|
+      3.3.3. match_count_max_file_size_in_bytes .... |g:match_count_max_file_size_in_bytes|
+      3.3.4. match_count_cache_timeout_in_seconds .. |g:match_count_cache_timeout_in_seconds|
+      3.3.5. match_count_short_display ............. |g:match_count_short_display|
+      3.3.6. match_count_medium_display ............ |g:match_count_medium_display|
+      3.3.7. match_count_long_display .............. |g:match_count_long_display|
+      3.3.8. match_count_start ..................... |g:match_count_start|
+      3.3.9. match_count_end ....................... |g:match_count_end|
+  4. License ....................................... |match-count-statusline-license|
+  5. Bugs .......................................... |match-count-statusline-bugs|
+  6. Contributing .................................. |match-count-statusline-contributing|
+  7. Changelog ..................................... |match-count-statusline-changelog|
+
+
+==============================================================================
+1. Usage                                        *match-count-statusline-usage*
+
+In typical usage, |match-count-statusline| requires no thought. It appears
+anytime you perform a search and displays the number of occurrences for that
+search in the statusline.
+
+
+==============================================================================
+2. Commands                                  *match-count-statusline-commands*
+
+:ToggleMatchCounting                                    *:ToggleMatchCounting*
+    Match counting is enabled automatically for any buffer unless the
+    underlying file is larger than |g:match_count_max_file_size_in_bytes|.
+    Match counting may be disabled at any time by running the command:
+>
+      :ToggleMatchCounting
+<
+    Running the same command again will re-enable match counting.
+
+    If match counting has automatically been disabled for a buffer due to its
+    file's size, then this command will force match counting on. It may be
+    then used to force match counting back off again for that buffer.
+
+
+==============================================================================
+3. Configuration                               *match-count-statusline-config*
+
+|match-count-statusline| may not need any configuration (see below). However,
+if it doesn't automatically appear in your |statusline|, skip down to the
+|match-count-statusline-status-config| section. There are a few additional
+global settings described in |match-count-statusline-other-config|.
+
+
+------------------------------------------------------------------------------
+3.1 Automatic configuration               *match-count-statusline-auto-config*
+
+In two scenarios, |match-count-statusline| works without configuration
+whatsoever.
+
+In the first scenario, an unconfigured instance of Vim, the plugin will set
+|laststatus| to 2 in order to force displaying the |status-line|, enable the
+|ruler|, and add itself to the beginning of the |statusline|. This will allow
+the match count to display for any currently visible buffer when a search
+pattern is entered.
+
+The second scenario is when Vim has vim-airline installed. If it is available,
+this plugin will add a match-count section to the left.
+
+The vim-airline plugin can be found here:
+https://github.com/vim-airline/vim-airline
+
+
+------------------------------------------------------------------------------
+3.1 Statusline configuration            *match-count-statusline-status-config*
+
+If the match count does not automatically appear in the statusline after
+installation, it will be necessary to add it yourself. This is relatively
+painless, though, so do not fret!
+
+You need to add a small piece of configuration to your statusline: >
+
+    %{MatchCountStatusline()}
+
+This can go anywhere in your |statusline|. Where you put it will affect where
+it will appear in your statusline. For example, here is a very basic
+statusline incorporating the match count near the end of the left side. >
+
+    set statusline=%<%f\ %h%m%{MatchCountStatusline()}%r%=%-14.(%l,%c%V%)\ %P
+
+This line may be added verbatim to your |vimrc| file.
+
+If you're using another form of statusline configuration plugin, it requires
+adding the same configuration to that plugin. Please consult the help for that
+plugin for instructions how to do so.
+
+
+------------------------------------------------------------------------------
+3.1 Other configuration                  *match-count-statusline-other-config*
+
+The following global configuration settings allow further customizing
+|match-count-statusline|.
+
+
+------------------------------------------------------------------------------
+3.1.1 match_count_disable_airline              *g:match_count_disable_airline*
+
+Force |match-count-statusline| not to attempt to configure vim-airline. Use
+this if you're manually configuring a statusline plugin elsewhere and don't
+want to use vim-airline, but it's still installed for some reason. >
+
+  let g:match_count_disable_airline = v:false
+
+
+------------------------------------------------------------------------------
+3.1.2 match_count_disable_statusline        *g:match_count_disable_statusline*
+
+Force |match-count-statusline| not to attempt to configure statusline. Use
+this if you're manually configuring a statusline plugin elsewhere and don't
+want this plugin to attempt to configure the statusline. Probably not needed,
+but provided in case there's a bug. >
+
+  let g:match_count_disable_statusline = v:false
+
+
+------------------------------------------------------------------------------
+3.1.3 match_count_max_file_size_in_bytes *g:match_count_max_file_size_in_bytes*
+
+Largest file size, in bytes, before |match-count-statusline| automatically
+disables itself for that buffer. Match counting can be sluggish and buggy on
+larger files. If you really want it, you can toggle it on with
+|:ToggleMatchCounting|. >
+
+  let g:match_count_max_file_size_in_bytes = 10 * 1024 * 1024
+
+
+------------------------------------------------------------------------------
+3.1.4 match_count_cache_timeout_in_seconds *g:match_count_cache_timeout_in_seconds*
+
+Longest duration of time, in seconds, during which the cached value of the
+match count will be retained. This is a performance optimization to save from
+needless recalcuations during typing in searches when |incsearch| is set.
+
+May be a floating point value (and therefore less than a full second), but if
+Vim is compiled without |reltime|, then only full seconds-wise resolution will
+be available. >
+
+  let g:match_count_cache_timeout_in_seconds = 0.10
+
+
+------------------------------------------------------------------------------
+3.1.5 match_count_short_display                  *g:match_count_short_display*
+
+Force display of match count to its shortest form (i.e., only a number).
+Defining this variable along with |g:match_count_medium_display| and
+|g:match_count_long_display| will result in undefined behavior, as these
+settings are meant to be used mutually exclusively. >
+
+  let g:match_count_short_display = v:false
+
+
+------------------------------------------------------------------------------
+3.1.6 match_count_medium_display                *g:match_count_medium_display*
+
+Force display of match count to its medium form (e.g., "x matches"). Defining
+this variable along with |g:match_count_short_display| and
+|g:match_count_long_display| will result in undefined behavior, as these
+settings are meant to be used mutually exclusively. >
+
+  let g:match_count_medium_display = v:false
+
+
+------------------------------------------------------------------------------
+3.1.7 match_count_long_display                    *g:match_count_long_display*
+
+Force display of match count to its long form (e.g., "x matches of
+/pattern/"). Defining this variable along with |g:match_count_short_display|
+and |g:match_count_medium_display| will result in undefined behavior, as these
+settings are meant to be used mutually exclusively. >
+
+  let g:match_count_long_display = v:false
+
+
+------------------------------------------------------------------------------
+3.1.8 match_count_start                                  *g:match_count_start*
+
+String to be displayed immediately before the match count item in the
+statusline. May be used to customize its appearance, along with
+|g:match_count_end|. For example, these settings together may be used together
+to surround the output with brackets. >
+
+  let g:match_count_start = ''
+
+
+------------------------------------------------------------------------------
+3.1.9 match_count_end                                      *g:match_count_end*
+
+String to be displayed immediately after the match count item in the
+statusline. May be used to customize its appearance, along with
+|g:match_count_start|. For example, these settings together may be used
+together to surround the output with brackets. >
+
+  let g:match_count_end = ''
+
+
+==============================================================================
+4. License                                    *match-count-statusline-license*
+
+Released into the public domain (CC0 license). For details, see:
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+
+==============================================================================
+5. Bugs                                          *match-count-statusline-bugs*
+
+Moving the cursor while executing a search in a large file results in
+displaying zero matches found.
+
+
+==============================================================================
+6. Contributing                          *match-count-statusline-contributing*
+
+To contribute to this plugin, find it on GitHub. Please see the CONTRIBUTING
+file accompanying it for guidelines.
+
+https://github.com/emilyst/match-count-statusline
+
+
+==============================================================================
+7. Changelog                                *match-count-statusline-changelog*
+
+2018-09-02
+  * Initial release
