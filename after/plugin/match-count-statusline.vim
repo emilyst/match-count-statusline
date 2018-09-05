@@ -62,6 +62,12 @@ function! s:IsCacheStale(count_cache)
   " hit the cache the first time around so there's a brief window when
   " first searching for a pattern before we update the statusline
   if a:count_cache == s:unused_cache_values
+    if has('reltime')
+      let a:count_cache.last_updated = reltime()
+    else
+      let a:count_cache.last_updated = localtime()
+    endif
+
     return v:false
   endif
 
@@ -190,6 +196,7 @@ function! MatchCountStatusline()
     return s:PrintMatchCount(b:count_cache)
   endif
 
+
   " use cached values if nothing has changed since the last check
   if b:count_cache.pattern == @/ && b:count_cache.changedtick == b:changedtick
     return s:PrintMatchCount(b:count_cache)
@@ -201,9 +208,9 @@ function! MatchCountStatusline()
     let b:count_cache.match_count = 0
     let b:count_cache.changedtick = b:changedtick
     if has('reltime')
-      let a:count_cache.last_updated = reltime()
+      let b:count_cache.last_updated = reltime()
     else
-      let a:count_cache.last_updated = localtime()
+      let b:count_cache.last_updated = localtime()
     endif
   else
     try
@@ -239,9 +246,9 @@ function! MatchCountStatusline()
       let b:count_cache.match_count = l:match_count
       let b:count_cache.changedtick = b:changedtick
       if has('reltime')
-        let a:count_cache.last_updated = reltime()
+        let b:count_cache.last_updated = reltime()
       else
-        let a:count_cache.last_updated = localtime()
+        let b:count_cache.last_updated = localtime()
       endif
     catch
       " if there's an error, let's pretend we don't see anything
@@ -249,9 +256,9 @@ function! MatchCountStatusline()
       let b:count_cache.match_count = 0
       let b:count_cache.changedtick = b:changedtick
       if has('reltime')
-        let a:count_cache.last_updated = reltime()
+        let b:count_cache.last_updated = reltime()
       else
-        let a:count_cache.last_updated = localtime()
+        let b:count_cache.last_updated = localtime()
       endif
     finally
       if has('extra_search')
