@@ -51,10 +51,10 @@ let s:end =
 
 " default sentinel values representing an unused cache
 let s:unused_cache_values = {
-      \   'pattern':     -1,
-      \   'changedtick': -1,
-      \   'match_count': -1,
-      \   'last_run':    -1
+      \   'pattern':      -1,
+      \   'changedtick':  -1,
+      \   'match_count':  -1,
+      \   'last_updated': -1
       \ }
 
 " return v:true if cache is stale, v:false if not
@@ -62,12 +62,6 @@ function! s:IsCacheStale(count_cache)
   " hit the cache the first time around so there's a brief window when
   " first searching for a pattern before we update the statusline
   if a:count_cache == s:unused_cache_values
-    if has('reltime')
-      let a:count_cache.last_run = reltime()
-    else
-      let a:count_cache.last_run = localtime()
-    endif
-
     return v:false
   endif
 
@@ -77,34 +71,28 @@ function! s:IsCacheStale(count_cache)
   if has('reltime')
     try
       " not calling reltimefloat for perf reasons
-      let l:time_elapsed = reltime(a:count_cache.last_run)
+      let l:time_elapsed = reltime(a:count_cache.last_updated)
       if type(l:time_elapsed) != 3          " error (treat as cache miss)
-        let a:count_cache.last_run = reltime()
         return v:true
       elseif l:time_elapsed[0] > l:seconds  " cache miss (more than a second)
-        let a:count_cache.last_run = reltime()
         return v:true
       elseif l:time_elapsed[1] > l:micros   " cache miss (less than a second)
-        let a:count_cache.last_run = reltime()
         return v:true
       else                                  " cache hit
         return v:false
       endif
     catch                                   " error (treat as cache miss)
-      let a:count_cache.last_run = reltime()
       return v:true
     endtry
   else
     try " not the ideal fallback -- seconds-wise precision only
-      let l:time_elapsed = a:count_cache.last_run - localtime()
+      let l:time_elapsed = a:count_cache.last_updated - localtime()
       if l:time_elapsed > l:seconds         " cache miss (more than a second)
-        let a:count_cache.last_run = localtime()
         return v:true
       else                                  " cache hit
         return v:false
       endif
     catch                                   " error (treat as cache miss)
-      let a:count_cache.last_run = localtime()
       return v:true
     endtry
   endif
@@ -212,6 +200,11 @@ function! MatchCountStatusline()
     let b:count_cache.pattern     = ''
     let b:count_cache.match_count = 0
     let b:count_cache.changedtick = b:changedtick
+    if has('reltime')
+      let a:count_cache.last_updated = reltime()
+    else
+      let a:count_cache.last_updated = localtime()
+    endif
   else
     try
       " freeze the view in place
@@ -245,10 +238,21 @@ function! MatchCountStatusline()
       let b:count_cache.pattern     = @/
       let b:count_cache.match_count = l:match_count
       let b:count_cache.changedtick = b:changedtick
+      if has('reltime')
+        let a:count_cache.last_updated = reltime()
+      else
+        let a:count_cache.last_updated = localtime()
+      endif
     catch
       " if there's an error, let's pretend we don't see anything
       let b:count_cache.pattern     = @/
       let b:count_cache.match_count = 0
+      let b:count_cache.changedtick = b:changedtick
+      if has('reltime')
+        let a:count_cache.last_updated = reltime()
+      else
+        let a:count_cache.last_updated = localtime()
+      endif
     finally
       if has('extra_search')
         let l:hlsearch = v:hlsearch
