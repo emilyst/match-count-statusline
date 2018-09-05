@@ -160,7 +160,7 @@ May be a floating point value (and therefore less than a full second), but if
 Vim is compiled without |reltime|, then only full seconds-wise resolution will
 be available. >
 
-  let g:match_count_cache_timeout_in_seconds = 0.10
+  let g:match_count_cache_timeout_in_seconds = 0.25
 
 
 ------------------------------------------------------------------------------

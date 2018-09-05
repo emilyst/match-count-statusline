@@ -29,7 +29,7 @@ let s:max_file_size_in_bytes =
 
 " cache timeout (so we don't drag during, e.g., incsearch)
 let s:cache_timeout_in_seconds =
-      \ get(g:, 'match_count_cache_timeout_in_seconds', 0.10)
+      \ get(g:, 'match_count_cache_timeout_in_seconds', 0.25)
 
 " force short length display (just the count)
 let s:short_display =
