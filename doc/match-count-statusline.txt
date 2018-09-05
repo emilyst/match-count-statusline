@@ -152,7 +152,7 @@ larger files. If you really want it, you can toggle it on with
 ------------------------------------------------------------------------------
 3.1.4 match_count_cache_timeout_in_seconds *g:match_count_cache_timeout_in_seconds*
 
-Longest duration of time, in seconds, during which the cached value of the
+Minimum duration of time, in seconds, during which the cached value of the
 match count will be retained. This is a performance optimization to save from
 needless recalcuations during typing in searches when |incsearch| is set.
 
