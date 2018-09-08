@@ -217,10 +217,6 @@ function! MatchCountStatusline()
       " freeze the view in place
       let l:view = winsaveview()
 
-      " defer drawing
-      let l:lazyredraw = &lazyredraw
-      set lazyredraw
-
       " disable autocmds
       if has('autocmd')
         let l:events_ignored = &eventignore
@@ -275,8 +271,6 @@ function! MatchCountStatusline()
       if has('autocmd')
         let &eventignore = l:events_ignored
       endif
-
-      let &lazyredraw = l:lazyredraw
 
       call winrestview(l:view)
     endtry
