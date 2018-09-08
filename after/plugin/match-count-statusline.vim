@@ -106,7 +106,7 @@ endfunction
 
 " use the cache and window width to construct the status string
 function! s:PrintMatchCount(count_cache)
-  if @/ == ''
+  if empty(@/)
     return ''
   elseif a:count_cache.match_count == -1
     return s:start . 'working...' . s:end
@@ -191,19 +191,18 @@ function! MatchCountStatusline()
 
   let b:count_cache = get(b:, 'count_cache', copy(s:unused_cache_values))
 
-  " only update if enough time has passed
+  " use the cache no matter what if it hasn't gone stale
   if !s:IsCacheStale(b:count_cache)
     return s:PrintMatchCount(b:count_cache)
   endif
 
-
-  " use cached values if nothing has changed since the last check
+  " check if cached match count is still valid before recounting matches
   if b:count_cache.pattern == @/ && b:count_cache.changedtick == b:changedtick
     return s:PrintMatchCount(b:count_cache)
   endif
 
   " don't count matches that aren't being searched for
-  if @/ == ''
+  if empty(@/)
     let b:count_cache.pattern     = ''
     let b:count_cache.match_count = 0
     let b:count_cache.changedtick = b:changedtick
@@ -236,9 +235,9 @@ function! MatchCountStatusline()
       silent! execute s:match_command
       redir END
 
-      if len(l:match_output) == 0 " no output means nothing was found
+      if empty(l:match_output) " no output means nothing was found
         let l:match_count = 0
-      else                       " otherwise the first word contains the count
+      else                     " otherwise the first word contains the count
         let l:match_count = split(l:match_output)[0]
       endif
 
@@ -251,6 +250,15 @@ function! MatchCountStatusline()
         let b:count_cache.last_updated = localtime()
       endif
     catch
+      let l:error_message = 'Caught exception while counting matches: "'
+      let l:error_message += v:exception
+      let l:error_message += '" from "'
+      let l:error_message += v:throwpoint
+      let l:error_message += '" with match output: "'
+      let l:error_message += l:match_output
+      let l:error_message += '"'
+      echom l:error_message
+
       " if there's an error, let's pretend we don't see anything
       let b:count_cache.pattern     = @/
       let b:count_cache.match_count = 0
