@@ -244,6 +244,8 @@ https://github.com/emilyst/match-count-statusline
 ==============================================================================
 7. Changelog                                *match-count-statusline-changelog*
 
+2018-09-08
+  * Fixed bug caused by lazyredraw
 2018-09-04
   * Lengthened cache timeout period to a quarter of a second
   * Optimize cache updating logic
