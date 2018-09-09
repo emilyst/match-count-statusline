@@ -215,13 +215,10 @@ function! MatchCountStatusline()
     endif
   else
     try
-      " freeze the view in place
-      let l:view = winsaveview()
-
-      " disable autocmds
-      if has('autocmd')
-        let l:events_ignored = &eventignore
-        set eventignore =
+      " attempt to delay redrawing the display
+      if has('reltime')
+        let l:redrawtime = &redrawtime
+        set redrawtime = 1000000  " some giant value
       endif
 
       " turn off hlsearch
@@ -230,6 +227,15 @@ function! MatchCountStatusline()
         if l:hlsearch
           let v:hlsearch = v:false
         endif
+      endif
+
+      " freeze the view in place
+      let l:view = winsaveview()
+
+      " disable autocmds
+      if has('autocmd')
+        let l:events_ignored = &eventignore
+        set eventignore =
       endif
 
       " this trick counts the matches (see :help count-items)
@@ -271,6 +277,12 @@ function! MatchCountStatusline()
         let b:count_cache.last_updated = localtime()
       endif
     finally
+      if has('autocmd')
+        let &eventignore = l:events_ignored
+      endif
+
+      call winrestview(l:view)
+
       if has('extra_search')
         let l:hlsearch = v:hlsearch
         if l:hlsearch
@@ -278,11 +290,9 @@ function! MatchCountStatusline()
         endif
       endif
 
-      if has('autocmd')
-        let &eventignore = l:events_ignored
+      if has('reltime')
+        let &redrawtime = l:redrawtime
       endif
-
-      call winrestview(l:view)
     endtry
   endif
 
