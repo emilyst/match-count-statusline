@@ -3,6 +3,7 @@ scriptencoding utf-8
 " require 7.4.1658 for v:vim_did_enter
 if &compatible
       \ || !has('statusline')
+      \ || !has('reltime')
       \ || v:version < 704
       \ || (v:version == 704 && !has('patch1658'))
       \ || exists('g:loaded_match_count_statusline')
@@ -64,46 +65,28 @@ function! s:IsCacheStale(count_cache)
   " hit the cache the first time around so there's a brief window when
   " first searching for a pattern before we update the statusline
   if a:count_cache == s:unused_cache_values
-    if has('reltime')
-      let a:count_cache.last_updated = reltime()
-    else
-      let a:count_cache.last_updated = localtime()
-    endif
-
+    let a:count_cache.last_updated = reltime()
     return v:false
   endif
 
   let l:seconds = s:cache_timeout_in_seconds
   let l:micros = s:cache_timeout_in_seconds * 1000000
 
-  if has('reltime')
-    try
-      " not calling reltimefloat for perf reasons
-      let l:time_elapsed = reltime(a:count_cache.last_updated)
-      if type(l:time_elapsed) != 3          " error (treat as cache miss)
-        return v:true
-      elseif l:time_elapsed[0] > l:seconds  " cache miss (more than a second)
-        return v:true
-      elseif l:time_elapsed[1] > l:micros   " cache miss (less than a second)
-        return v:true
-      else                                  " cache hit
-        return v:false
-      endif
-    catch                                   " error (treat as cache miss)
+  try
+    " not calling reltimefloat for perf reasons
+    let l:time_elapsed = reltime(a:count_cache.last_updated)
+    if type(l:time_elapsed) != 3          " error (treat as cache miss)
       return v:true
-    endtry
-  else
-    try " not the ideal fallback -- seconds-wise precision only
-      let l:time_elapsed = a:count_cache.last_updated - localtime()
-      if l:time_elapsed > l:seconds         " cache miss (more than a second)
-        return v:true
-      else                                  " cache hit
-        return v:false
-      endif
-    catch                                   " error (treat as cache miss)
+    elseif l:time_elapsed[0] > l:seconds  " cache miss (more than a second)
       return v:true
-    endtry
-  endif
+    elseif l:time_elapsed[1] > l:micros   " cache miss (less than a second)
+      return v:true
+    else                                  " cache hit
+      return v:false
+    endif
+  catch                                   " error (treat as cache miss)
+    return v:true
+  endtry
 endfunction
 
 " use the cache and window width to construct the status string
@@ -208,18 +191,12 @@ function! MatchCountStatusline()
     let b:count_cache.pattern     = ''
     let b:count_cache.match_count = 0
     let b:count_cache.changedtick = b:changedtick
-    if has('reltime')
-      let b:count_cache.last_updated = reltime()
-    else
-      let b:count_cache.last_updated = localtime()
-    endif
+    let b:count_cache.last_updated = reltime()
   else
     try
       " attempt to delay redrawing the display
-      if has('reltime')
-        let l:redrawtime = &redrawtime
-        set redrawtime = 1000000  " some giant value
-      endif
+      let l:redrawtime = &redrawtime
+      set redrawtime = 1000000  " some giant value
 
       " turn off hlsearch
       if has('extra_search')
@@ -249,14 +226,10 @@ function! MatchCountStatusline()
         let l:match_count = split(l:match_output)[0]
       endif
 
-      let b:count_cache.pattern     = @/
-      let b:count_cache.match_count = l:match_count
-      let b:count_cache.changedtick = b:changedtick
-      if has('reltime')
-        let b:count_cache.last_updated = reltime()
-      else
-        let b:count_cache.last_updated = localtime()
-      endif
+      let b:count_cache.pattern      = @/
+      let b:count_cache.match_count  = l:match_count
+      let b:count_cache.changedtick  = b:changedtick
+      let b:count_cache.last_updated = reltime()
     catch
       let l:error_message = 'Caught exception while counting matches: "'
       let l:error_message += v:exception
@@ -268,14 +241,10 @@ function! MatchCountStatusline()
       echom l:error_message
 
       " if there's an error, let's pretend we don't see anything
-      let b:count_cache.pattern     = @/
-      let b:count_cache.match_count = 0
-      let b:count_cache.changedtick = b:changedtick
-      if has('reltime')
-        let b:count_cache.last_updated = reltime()
-      else
-        let b:count_cache.last_updated = localtime()
-      endif
+      let b:count_cache.pattern      = @/
+      let b:count_cache.match_count  = 0
+      let b:count_cache.changedtick  = b:changedtick
+      let b:count_cache.last_updated = reltime()
     finally
       if has('autocmd')
         let &eventignore = l:events_ignored
@@ -290,9 +259,7 @@ function! MatchCountStatusline()
         endif
       endif
 
-      if has('reltime')
-        let &redrawtime = l:redrawtime
-      endif
+      let &redrawtime = l:redrawtime
     endtry
   endif
 
