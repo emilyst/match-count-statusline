@@ -194,9 +194,8 @@ function! MatchCountStatusline()
     let b:count_cache.last_updated = reltime()
   else
     try
-      " attempt to delay redrawing the display
-      let l:redrawtime = &redrawtime
-      set redrawtime = 1000000  " some giant value
+      " freeze the view in place
+      let l:view = winsaveview()
 
       " turn off hlsearch
       if has('extra_search')
@@ -205,9 +204,6 @@ function! MatchCountStatusline()
           let v:hlsearch = v:false
         endif
       endif
-
-      " freeze the view in place
-      let l:view = winsaveview()
 
       " disable autocmds
       if has('autocmd')
@@ -231,14 +227,9 @@ function! MatchCountStatusline()
       let b:count_cache.changedtick  = b:changedtick
       let b:count_cache.last_updated = reltime()
     catch
-      let l:error_message = 'Caught exception while counting matches: "'
-      let l:error_message += v:exception
-      let l:error_message += '" from "'
-      let l:error_message += v:throwpoint
-      let l:error_message += '" with match output: "'
-      let l:error_message += l:match_output
-      let l:error_message += '"'
-      echom l:error_message
+      echom 'Caught exception while counting matches: "' .
+            \ v:exception . '" from "' . v:throwpoint .
+            \ '" with match output: "' . l:match_output . '"'
 
       " if there's an error, let's pretend we don't see anything
       let b:count_cache.pattern      = @/
@@ -258,8 +249,6 @@ function! MatchCountStatusline()
           let v:hlsearch = 0
         endif
       endif
-
-      let &redrawtime = l:redrawtime
     endtry
   endif
 

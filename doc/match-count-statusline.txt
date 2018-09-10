@@ -246,7 +246,6 @@ https://github.com/emilyst/match-count-statusline
 
 2018-09-09
   * Check for statusline feature before running at all
-  * Drawing improvements during match counting
   * Require +reltime feature
 2018-09-08
   * Fixed bug caused by lazyredraw
