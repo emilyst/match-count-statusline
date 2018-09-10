@@ -182,7 +182,7 @@ function! MatchCountStatusline()
   endif
 
   " check if cached match count is still valid before recounting matches
-  if b:count_cache.pattern == @/ && b:count_cache.changedtick == b:changedtick
+  if b:count_cache.pattern ==# @/ && b:count_cache.changedtick == b:changedtick
     return s:PrintMatchCount(b:count_cache)
   endif
 
@@ -213,12 +213,12 @@ function! MatchCountStatusline()
 
       " this trick counts the matches (see :help count-items)
       redir => l:match_output
-      silent execute s:match_command
+      silent! execute s:match_command
       redir END
 
-      if empty(l:match_output) " no output means nothing was found
+      if empty(l:match_output) || l:match_output =~ 'error'
         let l:match_count = 0
-      else                     " otherwise the first word contains the count
+      else
         let l:match_count = split(l:match_output)[0]
       endif
 
@@ -227,9 +227,11 @@ function! MatchCountStatusline()
       let b:count_cache.changedtick  = b:changedtick
       let b:count_cache.last_updated = reltime()
     catch
+      " the actual search is `silent!` and should suppress most errors,
+      " but in case any slip through, they reach here
       echom 'Caught exception while counting matches: "' .
-            \ v:exception . '" from "' . v:throwpoint .
-            \ '" with match output: "' . l:match_output . '"'
+            \ v:exception . '" from ' . v:throwpoint .
+            \ ' with match output: "' . l:match_output . '"'
 
       " if there's an error, let's pretend we don't see anything
       let b:count_cache.pattern      = @/
