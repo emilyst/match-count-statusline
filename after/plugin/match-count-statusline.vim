@@ -213,7 +213,7 @@ function! MatchCountStatusline()
 
       " this trick counts the matches (see :help count-items)
       redir => l:match_output
-      silent! execute s:match_command
+      silent execute s:match_command
       redir END
 
       if empty(l:match_output) " no output means nothing was found
