@@ -19,38 +19,29 @@ else
 endif
 
 " force disabling airline
-let s:disable_airline =
-      \ get(g:, 'match_count_disable_airline', v:false)
+let s:disable_airline = get(g:, 'match_count_disable_airline', v:false)
 
 " force disabling statusline
-let s:disable_statusline =
-      \ get(g:, 'match_count_disable_statusline', v:false)
+let s:disable_statusline = get(g:, 'match_count_disable_statusline', v:false)
 
 " max file size before automatically disabling
-let s:max_file_size_in_bytes =
-      \ get(g:, 'match_count_max_file_size_in_bytes', 10 * 1024 * 1024)
+let s:max_file_size_in_bytes = get(g:, 'match_count_max_file_size_in_bytes', 10 * 1024 * 1024)
 
 " cache timeout (so we don't drag during, e.g., incsearch)
-let s:cache_timeout_in_seconds =
-      \ get(g:, 'match_count_cache_timeout_in_seconds', 0.25)
+let s:cache_timeout_in_seconds = get(g:, 'match_count_cache_timeout_in_seconds', 0.25)
 
 " force short length display (just the count)
-let s:short_display =
-      \ get(g:, 'match_count_short_display', v:false)
+let s:short_display = get(g:, 'match_count_short_display', v:false)
 
 " force medium length display
-let s:medium_display =
-      \ get(g:, 'match_count_medium_display', v:false)
+let s:medium_display = get(g:, 'match_count_medium_display', v:false)
 
 " force long display (count along with pattern)
-let s:long_display =
-      \ get(g:, 'match_count_long_display', v:false)
+let s:long_display = get(g:, 'match_count_long_display', v:false)
 
-let s:start =
-      \ get(g:, 'match_count_start', '')
+let s:start = get(g:, 'match_count_start', '')
 
-let s:end =
-      \ get(g:, 'match_count_end', '')
+let s:end = get(g:, 'match_count_end', '')
 
 " default sentinel values representing an unused cache
 let s:unused_cache_values = {
