@@ -261,4 +261,14 @@ elseif !s:disable_statusline
   endif
 endif
 
+function! s:CountMatchesOnDemand()
+  let l:match_count_was_enabled = get(b:, 'match_count_enable')
+  let b:match_count_enable      = v:true
+  let l:output                  = MatchCountStatusline()
+  let b:match_count_enable      = l:match_count_was_enabled
+
+  return l:output
+endfunction
+
 command! -nargs=0 ToggleMatchCounting call <SID>ToggleMatchCounting()
+command! -nargs=0 CountMatches echo <SID>CountMatchesOnDemand()
