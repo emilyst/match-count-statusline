@@ -58,6 +58,22 @@ search in the statusline.
     then used to force match counting back off again for that buffer.
 
 
+:CountMatches                                           *:CountMatches*
+    Immediately print a message which displays the count of matches for
+    the current search, even if the match-counting functionality has
+    been toggled off otherwise.
+
+    This command is preliminary in functionality and does not support
+    all cases.
+
+    To use it, run:
+>
+      :CountMatches
+<
+    In the future, it will be possible to provide ad-hoc buffer searches
+    to this command and to customize its output.
+
+
 ==============================================================================
 3. Configuration                               *match-count-statusline-config*
 
@@ -244,6 +260,8 @@ https://github.com/emilyst/match-count-statusline
 ==============================================================================
 7. Changelog                                *match-count-statusline-changelog*
 
+2019-10-03
+  * Add :CountItems command
 2018-09-09
   * Require +statusline feature
   * Require +reltime feature
