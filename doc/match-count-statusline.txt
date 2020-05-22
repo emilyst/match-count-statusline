@@ -260,6 +260,8 @@ https://github.com/emilyst/match-count-statusline
 ==============================================================================
 7. Changelog                                *match-count-statusline-changelog*
 
+2020-05-22
+  * Fix #1: broken replace-with-confirm-flag
 2019-10-03
   * Add :CountItems command
 2018-09-09

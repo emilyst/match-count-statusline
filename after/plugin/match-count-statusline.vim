@@ -141,12 +141,27 @@ function! s:ToggleMatchCounting()
   redrawstatus!
 endfunction
 
+" most modes we don't actually need to update the statusline, but for
+" a few, we do. this should help fix #1
+function! s:IsAcceptableMode()
+  let l:mode = mode()
+
+  if mode ==# 'n' || mode ==? 'v' || mode ==# 'i' || mode ==# 'R' || mode ==# 'Rv' || mode ==? 's'
+    return v:true
+  else
+    return v:false
+  endif
+endfunction
+
 " calculate the match count
 function! MatchCountStatusline()
   " don't bother executing until Vim has fully loaded
   if v:vim_did_enter == v:false
     return ''
   endif
+
+  " don't update unless we're in a mode that matters
+  if !s:IsAcceptableMode() | return '' | endif
 
   " define buffer variables if not already defined
   let b:match_count_force = get(b:, 'match_count_force', v:false)
