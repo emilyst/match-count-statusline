@@ -1,5 +1,8 @@
 # match-count-statusline.vim
 
+**Note: This plugin is in maintenance mode. I use Vim somewhat rarely
+these days. Anyone is welcome to take up the torch.**
+
 This plugin provides one relatively simple piece of functionality to
 Vim: it automatically counts the number of times the current search
 pattern occurs in your current buffer and displays that in the
