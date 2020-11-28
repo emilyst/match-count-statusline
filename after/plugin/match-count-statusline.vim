@@ -270,7 +270,8 @@ elseif !s:disable_statusline
   " add to statusline if it's not already added manually and if airline
   " doesn't exist
   if &statusline !~ 'MatchCountStatusline'
-    set laststatus = 2
+    " no space after `=` on the next line
+    set laststatus=2
     set ruler
     let &statusline = '%!MatchCountStatusline() ' . &statusline
   endif
