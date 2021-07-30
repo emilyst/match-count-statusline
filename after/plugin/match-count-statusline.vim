@@ -273,7 +273,7 @@ elseif !s:disable_statusline
     " no space after `=` on the next line
     set laststatus=2
     set ruler
-    let &statusline = '%!MatchCountStatusline() ' . &statusline
+    let &statusline = '%{MatchCountStatusline()} ' . &statusline
   endif
 endif
 
